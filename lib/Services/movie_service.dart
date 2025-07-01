@@ -20,7 +20,7 @@ class MovieServices {
     }
   }
 
-  Future findMovies(String query) async {
+  Future searchMovies(String query) async {
     final url = Uri.parse(
       'https://api.themoviedb.org/3/search/movie?api_key=$apiKey&language=en-US&query=$query&page=1&include_adult=false',
     );
