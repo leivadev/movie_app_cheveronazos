@@ -5,6 +5,8 @@ import 'package:movie_app_cheveronazos/Services/movie_service.dart';
 import 'package:movie_app_cheveronazos/Widgets/movie_item.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final movieProvider = Provider.of<MovieProvider>(context);
