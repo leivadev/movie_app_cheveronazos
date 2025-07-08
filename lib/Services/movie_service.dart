@@ -1,50 +1,94 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:movie_app_cheveronazos/Models/movie.dart';
+import 'package:http/http.dart' as http;
+import '../models/movie.dart';
 
-class MovieServices {
-  final String? apiKey = dotenv.env['API_KEY'];
+class MovieService {
+  static const String _baseUrl = 'https://api.themoviedb.org/3';
+  static const String _apiKey = '296d744040e08605373486e1d3ebb214'; // Reemplaza con tu API key
 
-  Future<List<Pelicula>> fetchPopularMovies() async {
-    final url = Uri.parse(
-      'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1',
-    );
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-    );
+  Future<List<Movie>> getPopularMovies() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/movie/popular?api_key=$_apiKey&language=es-ES'),
+      );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      final List<dynamic> results = data['results'];
-      return results.map((movie) => Pelicula.fromJson(movie)).toList();
-    } else {
-      throw Exception('Failed to load popular movies');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> results = data['results'] ?? [];
+
+        return results.map((json) => Movie.fromJson(json)).toList();
+      } else {
+        print('Error: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error al obtener películas populares: $e');
+      return [];
     }
   }
 
-  Future<List<Pelicula>> searchMovies(String query) async {
-    final url = Uri.parse(
-      'https://api.themoviedb.org/3/search/movie?language=en-US&query=$query&page=1&include_adult=false',
-    );
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-    );
+  Future<List<Movie>> getTopRatedMovies() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/movie/top_rated?api_key=$_apiKey&language=es-ES'),
+      );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      final List<dynamic> results = data['results'];
-      return results.map((movie) => Pelicula.fromJson(movie)).toList();
-    } else {
-      throw Exception('Failed to search movies');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> results = data['results'] ?? [];
+
+        return results.map((json) => Movie.fromJson(json)).toList();
+      } else {
+        print('Error: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error al obtener películas mejor calificadas: $e');
+      return [];
+    }
+  }
+
+  Future<List<Movie>> getUpcomingMovies() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/movie/upcoming?api_key=$_apiKey&language=es-ES'),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> results = data['results'] ?? [];
+
+        return results.map((json) => Movie.fromJson(json)).toList();
+      } else {
+        print('Error: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error al obtener películas próximas: $e');
+      return [];
+    }
+  }
+
+  Future<List<Movie>> searchMovies(String query) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          '$_baseUrl/search/movie?api_key=$_apiKey&language=es-ES&query=$query',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> results = data['results'] ?? [];
+
+        return results.map((json) => Movie.fromJson(json)).toList();
+      } else {
+        print('Error: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error al buscar películas: $e');
+      return [];
     }
   }
 }
